@@ -1,7 +1,7 @@
 import { RegisterDto } from './dto/register.dto';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/entities/users.entity';
+import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { LoginDto } from './dto/login.dto';
 import { NotFoundError } from 'rxjs';
@@ -9,8 +9,8 @@ import { NotFoundError } from 'rxjs';
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectRepository(Users)
-        private readonly userRepository: Repository<Users>
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>
     ) {} 
 
     async login(loginDto: LoginDto){
@@ -25,7 +25,9 @@ export class AuthService {
         try {
             return await this.userRepository.save(registerDto);
         } catch (error) {
-            
+            return {
+                error: error
+            }
         }
     }
 

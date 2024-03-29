@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Tag } from "./tag.entity";
 
 @Entity()
-export class Books {
+export class Book {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -19,6 +20,7 @@ export class Books {
     })
     price: number;
 
-    @Column()
-    tag_id: number;
+    @OneToMany(() => Tag, tag => tag.books)
+    @JoinTable()
+    tags: Tag[];
 }
