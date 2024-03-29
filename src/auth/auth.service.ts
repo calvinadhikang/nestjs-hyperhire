@@ -14,12 +14,9 @@ export class AuthService {
     ) {} 
 
     async login(loginDto: LoginDto){
-        let err = false
-        const user = await this.userRepository.findOne({
-            where: {
-                username: loginDto.username,
-                password: loginDto.password
-            }
+        const user = await this.userRepository.findOneBy({
+            username: loginDto.username,
+            password: loginDto.password
         });
         
         if (!user) {
@@ -34,7 +31,7 @@ export class AuthService {
     }
 
     async register(registerDto: RegisterDto){
-        const user = await this.userRepository.findBy({username: registerDto.username})
+        const user = await this.userRepository.findOneBy({username: registerDto.username})
         if (user) {
             throw new BadRequestException("Username used")
         }

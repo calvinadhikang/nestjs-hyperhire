@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Tag } from "./tag.entity";
 
 @Entity()
@@ -12,7 +12,9 @@ export class Book {
     @Column()
     writer: string;
 
-    @Column()
+    @Column({
+        default: 'https://images-na.ssl-images-amazon.com/images/I/51Ga5GuElyL._AC_SX184_.jpg'
+    })
     image: string;
 
     @Column({
@@ -20,7 +22,7 @@ export class Book {
     })
     price: number;
 
-    @OneToMany(() => Tag, tag => tag.books)
+    @ManyToMany(() => Tag, tag => tag.books)
     @JoinTable()
     tags: Tag[];
 }
