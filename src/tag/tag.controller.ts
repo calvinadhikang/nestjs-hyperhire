@@ -8,7 +8,7 @@ export class TagController {
     constructor(private readonly tagService: TagService){}
 
     @Get()
-    getAllTags(){
+    getAll(){
         return this.tagService.findAll();
     }
 
