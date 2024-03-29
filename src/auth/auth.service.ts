@@ -1,5 +1,5 @@
 import { RegisterDto } from './dto/register.dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -14,21 +14,31 @@ export class AuthService {
     ) {} 
 
     async login(loginDto: LoginDto){
-        try {
-            return await this.userRepository.findOneByOrFail({username: loginDto.username, password: loginDto.password});
-        } catch (error){
+        let err = false
+        const user = await this.userRepository.findOne({
+            where: {
+                username: loginDto.username,
+                password: loginDto.password
+            }
+        });
+        
+        if (!user) {
             throw new NotFoundException('User not found !');
         }
+        
+        if (user.password != loginDto.password) {
+            throw new BadRequestException('Wrong Password');
+        }
+
+        return user
     }
 
     async register(registerDto: RegisterDto){
-        try {
-            return await this.userRepository.save(registerDto);
-        } catch (error) {
-            return {
-                error: error
-            }
+        const user = await this.userRepository.findBy({username: registerDto.username})
+        if (user) {
+            throw new BadRequestException("Username used")
         }
+        return await this.userRepository.save(registerDto);
     }
 
 }

@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { TagModule } from './tag/tag.module';
 import { BookModule } from './book/book.module';
+import { CartModule } from './cart/cart.module';
+import * as bodyParser from 'body-parser';
 
 @Module({
     imports: [
@@ -21,9 +22,14 @@ import { BookModule } from './book/book.module';
         }),
         AuthModule,
         TagModule,
-        BookModule
+        BookModule,
+        CartModule,
     ],
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(bodyParser.json()).forRoutes('*')
+    }
+}
