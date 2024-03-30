@@ -16,8 +16,20 @@ export class BookService {
         private readonly cartRepository: Repository<Cart>,
     ){}
 
-    async findAll(search: string){
+    async findAll(search: string, tags: string[]){
         const query = this.bookRepository.createQueryBuilder('book');
+        
+        if (Array.isArray(tags) && tags.length > 0) {
+            query.innerJoin('book.tags', 'tag', 'tag.name IN (:...tags)', { tags });
+        } else if (typeof tags === 'string' && tags !== '') {
+            query.innerJoin('book.tags', 'tag', 'tag.name = :tag', { tag: tags });
+        } else {
+            query.leftJoinAndSelect('book.tags', 'tag');
+        }
+
+        // Add another left join to fetch tags associated with each book
+        query.leftJoinAndSelect('book.tags', 'bookTags');
+
         query.where('book.title ILIKE :search', { search: `%${search}%` });
 
         return await query.getMany();
@@ -29,14 +41,23 @@ export class BookService {
 
     async addCart(addBookDto: AddToCart){
         const book = await this.bookRepository.findOneBy({id: addBookDto.book})
+        const cartExist = await this.cartRepository.findOneBy({userId: addBookDto.user, book: book})
 
-        const cart = await this.cartRepository.create({
-            userId: addBookDto.user,
-            quantity: addBookDto.quantity,
-            subtotal: addBookDto.quantity * book.price,
-            book: book
-        })
+        if (cartExist) {
+            cartExist.quantity = cartExist.quantity + 1
+            cartExist.subtotal = cartExist.quantity * book.price
 
-        return await this.cartRepository.save(cart)
+            return await this.cartRepository.save(cartExist)
+        }else{
+            const newcart = await this.cartRepository.create({
+                userId: addBookDto.user,
+                quantity: addBookDto.quantity,
+                subtotal: addBookDto.quantity * book.price,
+                book: book
+            })
+    
+            return await this.cartRepository.save(newcart)
+        }
+
     }
 }

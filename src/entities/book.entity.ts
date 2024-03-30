@@ -22,7 +22,7 @@ export class Book {
     })
     price: number;
 
-    @ManyToMany(() => Tag, tag => tag.books)
+    @ManyToMany(() => Tag, {eager: true, cascade: true})
     @JoinTable()
     tags: Tag[];
 }

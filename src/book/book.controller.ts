@@ -10,9 +10,10 @@ export class BookController {
 
     @Get()
     getAll(
-        @Query('search') search: string = ''
+        @Query('search') search: string = '',
+        @Query('tags') tags: string[] = []
     ){
-        return this.bookService.findAll(search);
+        return this.bookService.findAll(search, tags);
     }
     
     @Post('add')
