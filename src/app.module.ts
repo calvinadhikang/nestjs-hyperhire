@@ -14,11 +14,20 @@ import * as bodyParser from 'body-parser';
         type: 'postgres',
         host: 'localhost',
         port: 5432,
+        //---Development Only---//
         username: 'postgres',
         password: 'postgres',
         database: 'test',
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
+        //---End of Development Only---//
+        
+        //---Production Only---//
+        // database: 'nanaspos_test_postgres',
+        // username: 'nanaspos_calvinadhikang',
+        // password: 'calvinadhikang02',
+        //---End of Production Only---//
+        
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
         }),
         AuthModule,
         TagModule,
