@@ -11,9 +11,11 @@ export class BookController {
     @Get()
     getAll(
         @Query('search') search: string = '',
-        @Query('tags') tags: string[] = []
+        @Query('tags') tags: string[] = [],
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 5
     ){
-        return this.bookService.findAll(search, tags);
+        return this.bookService.findAll(search, tags, page, limit);
     }
     
     @Post('add')
