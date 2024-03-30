@@ -16,10 +16,14 @@ export class CartService {
         private readonly userRepository: Repository<User>
     ){}
 
-    async getCartByUserId(id: number) {
+    async getCartByUserId(id: number, page: number, limit: number) {
+        const skip = (page - 1) * limit
+
         return await this.cartRepository.find({
             where: {userId: id},
-            relations: ['book']
+            relations: ['book'],
+            take: limit,
+            skip: skip
         });
     }
     
@@ -28,15 +32,26 @@ export class CartService {
         return await this.cartRepository.remove(cart)
     }
 
-    async checkoutById(id: number) {
-        const cart = await this.cartRepository.findOneBy({id: id})
-        const user = await this.userRepository.findOneBy({id: cart.userId})
+    async checkoutByUserId(id: number) {
+        let totalPrice = 0
+        const user = await this.userRepository.findOneBy({id: id})
+        const carts = await this.cartRepository.findBy({userId: id})
+        if (carts.length > 0) {
+            carts.forEach(element => {
+                totalPrice += element.subtotal     
+            });
+        }else {
+            return {
+                error: true,
+                message: "User cart is empty !"
+            }
+        }
 
-        if (user.point >= cart.subtotal) {
-            user.point = user.point - cart.subtotal
+        if (user.point >= totalPrice) {
+            user.point = user.point - totalPrice
             console.log(user.point)
             await this.userRepository.save(user)
-            await this.cartRepository.remove(cart)
+            await this.cartRepository.remove(carts)
             
             return {
                 error: false,

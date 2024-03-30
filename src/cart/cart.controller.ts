@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { CartService } from './cart.service';
 
 @Controller('cart')
@@ -6,8 +6,12 @@ export class CartController {
     constructor(private readonly cartService: CartService){}
 
     @Get(':id')
-    getByUser(@Param('id') id: number){
-        return this.cartService.getCartByUserId(id);
+    getByUser(
+        @Param('id') id: number,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 3    
+    ){
+        return this.cartService.getCartByUserId(id, page, limit);
     }
 
     @Post('delete/:id')
@@ -17,6 +21,6 @@ export class CartController {
 
     @Post('checkout/:id')
     checkOut(@Param('id') id: number){
-        return this.cartService.checkoutById(id);
+        return this.cartService.checkoutByUserId(id);
     }
 }
