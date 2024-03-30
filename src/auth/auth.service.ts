@@ -20,11 +20,10 @@ export class AuthService {
         });
         
         if (!user) {
-            throw new NotFoundException('User not found !');
-        }
-        
-        if (user.password != loginDto.password) {
-            throw new BadRequestException('Wrong Password');
+            return {
+                error: true,
+                message: "User not found !"
+            }
         }
 
         return user
@@ -33,7 +32,10 @@ export class AuthService {
     async register(registerDto: RegisterDto){
         const user = await this.userRepository.findOneBy({username: registerDto.username})
         if (user) {
-            throw new BadRequestException("Username used")
+            return {
+                error: true,
+                message: 'Username has been used !'
+            }
         }
         return await this.userRepository.save(registerDto);
     }
