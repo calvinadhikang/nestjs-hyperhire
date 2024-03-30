@@ -29,7 +29,12 @@ export class CartService {
     
     async deleteById(id: number) {
         const cart = await this.cartRepository.findOneBy({id: id})
-        return await this.cartRepository.remove(cart)
+        await this.cartRepository.remove(cart)
+
+        return {
+            error: false,
+            message: "A cart item has been deleted !"
+        }
     }
 
     async checkoutByUserId(id: number) {

@@ -10,7 +10,7 @@ export class Cart {
     @Column()
     userId: number;
 
-    @OneToOne(() => Book, book => book.id)
+    @ManyToOne(() => Book, book => book.id)
     @JoinColumn()
     book: Book;
 

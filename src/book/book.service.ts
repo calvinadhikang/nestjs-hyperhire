@@ -45,7 +45,9 @@ export class BookService {
 
     async addCart(addBookDto: AddToCart){
         const book = await this.bookRepository.findOneBy({id: addBookDto.book})
+        console.log(book)
         const cartExist = await this.cartRepository.findOneBy({userId: addBookDto.user, book: book})
+        console.log(cartExist)
 
         if (cartExist) {
             cartExist.quantity = cartExist.quantity + 1
@@ -53,15 +55,17 @@ export class BookService {
 
             return await this.cartRepository.save(cartExist)
         }else{
-            const newcart = await this.cartRepository.create({
-                userId: addBookDto.user,
-                quantity: addBookDto.quantity,
-                subtotal: addBookDto.quantity * book.price,
-                book: book
-            })
-    
-            return await this.cartRepository.save(newcart)
+            try {
+                const newcart = await this.cartRepository.create({
+                    userId: addBookDto.user,
+                    quantity: addBookDto.quantity,
+                    subtotal: addBookDto.quantity * book.price,
+                    book: book
+                })
+                return await this.cartRepository.save(newcart)
+            } catch (error) {
+                console.log(error)
+            }
         }
-
     }
 }

@@ -25,6 +25,7 @@ export class BookController {
 
     @Post('buy')
     buy(@Body() addToCart: AddToCart){
+        console.log(addToCart)
         return this.bookService.addCart(addToCart);
     }
 }
